@@ -1,5 +1,11 @@
 package model;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import util.DBUtil;
+
 public class Section {
 	private int sectionNo;// 班次号
 	private String dayOfWeek;// 星期
@@ -65,4 +71,26 @@ public class Section {
 		this.studentsRegistered = studentsRegistered;
 	}
 
+	public boolean register(Student s,String semester){
+		boolean completed=s.successfullyCompleted(this,semester);
+		if(completed){
+			//注册学生并返回true
+			String sql = "insert into TranscriptEntry (Sssn,sectionNo) values('"+s.getSsn()+"','"+sectionNo+"')";
+			Connection conn = DBUtil.getSqliteConnection();
+			try {
+				Statement stmt = conn.createStatement();
+				stmt.executeUpdate(sql);
+				stmt.close();
+				conn.close();
+				return true;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println("插入成绩单异常：" + e.getMessage());
+				return false;
+			}
+		}else{
+			//注册失败并返回false
+			return false;
+		}
+	}
 }

@@ -1,9 +1,12 @@
 package model;
 
+import java.util.Collection;
+
 public class ScheduleOfClasses {
 	private String semester;
-	private Course course;
-
+	private Collection<Course> courses;
+	private Student student;
+	
 	public String getSemester() {
 		return semester;
 	}
@@ -12,12 +15,20 @@ public class ScheduleOfClasses {
 		this.semester = semester;
 	}
 
-	public Course getCourse() {
-		return course;
+	public Student getStudent() {
+		return student;
 	}
 
-	public void setCourse(Course course) {
-		this.course = course;
+	public void setStudent(Student student) {
+		this.student = student;
+	}
+
+	public Collection<Course> getCourses() {
+		return courses;
+	}
+
+	public void setCourses(Collection<Course> courses) {
+		this.courses = courses;
 	}
 
 }
