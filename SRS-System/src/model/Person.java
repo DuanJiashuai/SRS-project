@@ -1,8 +1,8 @@
 package model;
 
 public class Person {
-	private String ssn;
-	private String name;
+	private String ssn;//社会保险号
+	private String name;//姓名
 	
 	public String getSsn() {
 		return ssn;

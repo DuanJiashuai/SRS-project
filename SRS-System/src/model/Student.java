@@ -1,8 +1,8 @@
 package model;
 
 public class Student extends Person {
-	private String major;
-	private String degree;
+	private String major;//专业
+	private String degree;//学历
 	
 	public String getMajor() {
 		return major;

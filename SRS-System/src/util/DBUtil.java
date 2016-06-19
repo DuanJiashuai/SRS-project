@@ -2,59 +2,34 @@ package util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DBUtil {
-	private String DBDriver = "org.sqlite.JDBC";
-	private String database = "jdbc:sqlite://g:/guitar.db";
-	public Connection conn = null;
-	public ResultSet rs = null;
-		
-	public ResultSet query(String mySql) throws Exception {
-		try {
-			Class.forName(DBDriver);
-			conn = DriverManager.getConnection(database);
-			Statement stmt = conn.createStatement();
-			rs = stmt.executeQuery(mySql);
-			/*stmt.close();
-			conn.close();*/
-			/*return rs;*/
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("数据库查询异常："+e.getMessage());
+
+	public static Connection getSqliteConnection(){
+		String driver="org.sqlite.JDBC";
+		String conStr="jdbc:sqlite://d:/srs-system.db";
+		Connection conn=null;
+		try{
+			Class.forName(driver);
+			conn = DriverManager.getConnection(conStr);
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-		return rs;
+		return conn;			
 	}
 
-	public void update(String mySql) throws Exception {
-		try {
-			Class.forName(DBDriver);
-			conn = DriverManager.getConnection(database);
-			Statement stmt = conn.createStatement();
-			stmt.executeUpdate(mySql);
-			stmt.close();
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("数据库更新异常："+e.getMessage());
+	
+	public static Connection getMySqlConnection(){
+		String driver="com.mysql.jdbc.Driver";
+		String conStr="jdbc:mysql://localhost:3306/SRS-System";
+		Connection conn=null;
+		try{
+			Class.forName(driver);
+			conn = DriverManager.getConnection(conStr,"root","root");
+		}catch(Exception e){
+			e.printStackTrace();
 		}
+		return conn;			
 	}
 	
-	public void setDBDriver(String DBDriver) {
-		this.DBDriver = DBDriver;
-	}
-
-	public String getDBDriver() {
-		return DBDriver;
-	}
-	
-	public String getDatabase() {
-		return database;
-	}
-
-	public void setDatabase(String database) {
-		this.database = database;
-	}
 }

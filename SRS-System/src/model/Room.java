@@ -1,9 +1,9 @@
 package model;
 
 public class Room {
-	private int roomNo;
-	private String building;
-	private int seatingCapacity;
+	private int roomNo;//教室号
+	private String building;//建筑物
+	private int seatingCapacity;//座位容量
 	
 	public int getRoomNo() {
 		return roomNo;
