@@ -1,67 +1,121 @@
 package model;
 
 public class TranscriptEntry {
-	private int transEntryNo;
+	// ------------
+	// Attributes.
+	// ------------
+	private int TransEntryNo;
+	private String grade;
 	private Student student;
 	private Section section;
-	private String gradeReceived;
-	private int creditsEarned;
+	private Transcript transcript;
+	// ----------------
+	// Constructor(s).
+	// ----------------
 
-	public Section getSection() {
-		return section;
+	public TranscriptEntry(Student s, String grade, Section se) {
+		this.setStudent(s);
+		this.setSection(se);
+		this.setGrade(grade);
+
+		// Obtain the Student's transcript ...
+
+		Transcript t = s.getTranscript();
+
+		// ... and then link the Transcript and the TranscriptEntry
+		// together bidirectionally.
+
+		this.setTranscript(t);
+		t.addTranscriptEntry(this);
 	}
 
-	public void setSection(Section section) {
-		this.section = section;
+	public TranscriptEntry() {
+	}
+	// ------------------
+	// Accessor methods.
+	// ------------------
+
+	public int getTransEntryNo() {
+		return TransEntryNo;
+	}
+
+	public void setTransEntryNo(int transEntryNo) {
+		TransEntryNo = transEntryNo;
+	}
+
+	public void setStudent(Student s) {
+		student = s;
 	}
 
 	public Student getStudent() {
 		return student;
 	}
 
-	public void setStudent(Student student) {
-		this.student = student;
+	public void setSection(Section s) {
+		section = s;
 	}
 
-	public String getGradeReceived() {
-		return gradeReceived;
+	public Section getSection() {
+		return section;
 	}
 
-	public void setGradeReceived(String gradeReceived) {
-		this.gradeReceived = gradeReceived;
+	public void setGrade(String grade) {
+		this.grade = grade;
 	}
 
-	public int getCreditsEarned() {
-		return creditsEarned;
+	public String getGrade() {
+		return grade;
 	}
 
-	public void setCreditsEarned(int creditsEarned) {
-		this.creditsEarned = creditsEarned;
+	public void setTranscript(Transcript t) {
+		transcript = t;
 	}
 
-	public void countCreditsEarned(String gradeReceived) {
-		int cEarned = 0;
-		switch (gradeReceived) {
-		case "A":
-			cEarned = section.getRepresents().getCredits() * 4;
-		case "B":
-			cEarned = section.getRepresents().getCredits() * 3;
-		case "C":
-			cEarned = section.getRepresents().getCredits() * 2;
-		case "D":
-			cEarned = section.getRepresents().getCredits() * 1;
-		default:
-			cEarned = 0;
+	public Transcript getTranscript() {
+		return transcript;
+	}
+
+	// -----------------------------
+	// Miscellaneous other methods.
+	// -----------------------------
+
+	// These next two methods are declared to be static, so that they
+	// may be used as utility methods.
+
+	public static boolean validateGrade(String grade) {
+		boolean outcome = false;
+
+		if (grade.equals("F") || grade.equals("I")) {
+			outcome = true;
 		}
-		this.creditsEarned = cEarned;
+
+		if (grade.startsWith("A") || grade.startsWith("B") || grade.startsWith("C") || grade.startsWith("D")) {
+			if (grade.length() == 1)
+				outcome = true;
+			else if (grade.length() == 2) {
+				if (grade.endsWith("+") || grade.endsWith("-")) {
+					outcome = true;
+				}
+			}
+		}
+
+		return outcome;
 	}
 
-	public int getTransEntryNo() {
-		return transEntryNo;
-	}
+	public static boolean passingGrade(String grade) {
+		boolean outcome = false;
 
-	public void setTransEntryNo(int transEntryNo) {
-		this.transEntryNo = transEntryNo;
+		// First, make sure it is a valid grade.
+
+		if (validateGrade(grade)) {
+			// Next, make sure that the grade is a D or better.
+
+			if (grade.startsWith("A") || grade.startsWith("B") || grade.startsWith("C") || grade.startsWith("D")) {
+				outcome = true;
+			}
+		}
+
+		return outcome;
 	}
 
 }

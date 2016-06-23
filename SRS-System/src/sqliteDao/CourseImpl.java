@@ -8,12 +8,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.ICourse;
+import dao.CourseDao;
+import dao.ProfessorDao;
+import dao.SectionDao;
+import dao.dataAccess;
 import model.Course;
+import model.Professor;
+import model.Section;
 import util.DBUtil;
 
-public class CourseImpl implements ICourse {
-
+public class CourseImpl {
 	public List<Course> getAllCourses() {
 		Connection Conn = DBUtil.getSqliteConnection();
 		String sql = "select * from Course";
@@ -22,7 +26,7 @@ public class CourseImpl implements ICourse {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				int courseNo = rs.getInt("courseNo");
+				String courseNo = rs.getString("courseNo");
 				String courseName = rs.getString("courseName");
 				int credits = rs.getInt("credits");
 				Course course = new Course();
@@ -40,7 +44,7 @@ public class CourseImpl implements ICourse {
 		return courseList;
 	}
 
-	public Course getCourse(int courseNo) {
+	public Course getCourse(String courseNo) {
 		String sql = "select * from Course where courseNo='" + courseNo + "'";
 		Connection Conn = DBUtil.getSqliteConnection();
 		Course course = new Course();
@@ -61,10 +65,74 @@ public class CourseImpl implements ICourse {
 		return course;
 	}
 
+	public List<Section> getAllOfferedAsSection(Course course){
+		Connection Conn = DBUtil.getSqliteConnection();
+		String sql = "select * from Section where courseNo='"+course.getCourseNo()+"'";
+		List<Section> offeredAsSection=new ArrayList<Section>();
+		try{
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int sectionNo = rs.getInt("sectionNo");
+				
+				//由sectionNo查出相应的Section
+				SectionDao sd=dataAccess.createSectionDao();
+				Section section=sd.getSection(sectionNo);
+				
+				String dayOfWeek = rs.getString("dayOfWeek");
+				String timeOfDay = rs.getString("timeOfDay");
+				String Pssn = rs.getString("Pssn");
+				
+				//由Pssn查出相应的Professor
+				ProfessorDao pd=dataAccess.createProfessorDao();
+				Professor professor=pd.getProfessor(Pssn);
+				
+				String room=rs.getString("room");
+				int seatingCapacity=rs.getInt("seatingCapacity");
+				
+				//将属性封装到section中
+				section.setDayOfWeek(dayOfWeek);
+				section.setTimeOfDay(timeOfDay);
+				section.setRepresentedCourse(course);
+				section.setInstructor(professor);
+				section.setRoom(room);
+				section.setSeatingCapacity(seatingCapacity);
+				
+				offeredAsSection.add(section);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return offeredAsSection;
+	}
+	
+	public List<Course> getPrerequisites(Course course){
+		String courseNo=course.getCourseNo();
+		List<Course> prerequisites=new ArrayList<Course>();
+		String sql="select * from PreRequisites where courseNo='"+courseNo+"'";
+		Connection Conn = DBUtil.getSqliteConnection();
+		try{
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String preCourseNo=rs.getString("preCourseNo");
+				CourseDao cd=dataAccess.createCourseDao();
+				Course preCourse=cd.getCourse(preCourseNo);
+				prerequisites.add(preCourse);
+			}
+		}catch(Exception e){
+			e.getStackTrace();
+		}
+		return prerequisites;
+	}
+	
 	public void addCourse(Course course) {
-		int courseNo = course.getCourseNo();
+		String courseNo = course.getCourseNo();
 		String courseName = course.getCourseName();
-		int credits = course.getCredits();
+		double credits = course.getCredits();
 
 		String sql = "insert into Course values('" + courseNo + "','" + courseName + "','" + credits + "')";
 		Connection conn = DBUtil.getSqliteConnection();
@@ -80,7 +148,7 @@ public class CourseImpl implements ICourse {
 	}
 
 	public void deleteCourse(Course course) {
-		int courseNo = course.getCourseNo();
+		String courseNo = course.getCourseNo();
 		Connection conn = DBUtil.getSqliteConnection();
 		String sql = "delete from Course where courseNo='" + courseNo + "'";
 		try {

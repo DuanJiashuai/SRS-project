@@ -1,20 +1,31 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Course {
-	private int courseNo;// 课程号
-	private String courseName;// 课程名
-	private int credits;// 学分
-	private Collection<Section> offeredAs;//所有班次的集合
-	private Collection<Professor> professors;//所有教授该课程的教师的集合
+	private String courseNo;
+	private String courseName;
+	private double credits;
 	
+	private ArrayList<Section> offeredAsSection;
+	private ArrayList<Course> prerequisites;
+	
+	public Course(String cNo, String cName, double credits) {
+		setCourseNo(cNo);
+		setCourseName(cName);
+		setCredits(credits);
+		offeredAsSection = new ArrayList<Section>();
+		prerequisites = new ArrayList<Course>();
+	}
 
-	public int getCourseNo() {
+	public Course() {}
+	
+	public String getCourseNo() {
 		return courseNo;
 	}
 
-	public void setCourseNo(int courseNo) {
+	public void setCourseNo(String courseNo) {
 		this.courseNo = courseNo;
 	}
 
@@ -26,28 +37,74 @@ public class Course {
 		this.courseName = courseName;
 	}
 
-	public int getCredits() {
+	public double getCredits() {
 		return credits;
 	}
 
-	public void setCredits(int credits) {
+	public void setCredits(double credits) {
 		this.credits = credits;
 	}
+	
+	// -----------------------------
+	// Miscellaneous other methods.
+	// -----------------------------
+	
+	public void addSection(Section s) {
+		offeredAsSection.add(s);
+	}
+	
+	public void display() {
+		System.out.println("Course Information:");
+		System.out.println("\tCourse No.:  " + getCourseNo());
+		System.out.println("\tCourse Name:  " + getCourseName());
+		System.out.println("\tCredits:  " + getCredits());
+		System.out.println("\tPrerequisite Courses:");
 
-	public Collection<Section> getOfferedAs() {
-		return offeredAs;
+		for (Course c : prerequisites) {
+			System.out.println("\t\t" + c.toString());
+		}
+
+		// Note use of print vs. println in next line of code.
+
+		System.out.print("\tOffered As Section(s):  ");
+		for (Section s : offeredAsSection) {
+			System.out.print(s.getSectionNo() + " ");
+		}
+
+		// Finish with a blank line.
+
+		System.out.println();
 	}
 
-	public void setOfferedAs(Collection<Section> offeredAs) {
-		this.offeredAs = offeredAs;
+	@Override
+	public String toString() {
+		return getCourseNo() + ":" + getCourseName();
 	}
 
-	public Collection<Professor> getProfessors() {
-		return professors;
+	public void addPrerequisite(Course c) {
+		prerequisites.add(c);
 	}
 
-	public void setProfessors(Collection<Professor> professors) {
-		this.professors = professors;
+	public boolean hasPrerequisites() {
+		if (prerequisites.size() > 0)
+			return true;
+		else
+			return false;
 	}
 
+	public Collection<Course> getPrerequisites() {
+		return prerequisites;
+	}
+
+	public Section scheduleSection(String day, String time, String room, int capacity) {
+		Section s = new Section();
+		s.setDayOfWeek(day);
+		s.setTimeOfDay(time);
+		s.setRepresentedCourse(this);
+		s.setRoom(room);
+		s.setSectionNo(offeredAsSection.size() + 1);
+		// 写入offeredAsSection中
+		addSection(s);
+		return s;
+	}
 }

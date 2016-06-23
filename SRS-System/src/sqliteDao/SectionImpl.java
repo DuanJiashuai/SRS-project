@@ -6,20 +6,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import dao.ICourse;
-import dao.IProfessor;
-import dao.IRoom;
-import dao.ISection;
+import dao.CourseDao;
+import dao.ProfessorDao;
+import dao.StudentDao;
+import dao.TranscriptEntryDao;
 import dao.dataAccess;
 import model.Course;
 import model.Professor;
-import model.Room;
 import model.Section;
+import model.Student;
+import model.TranscriptEntry;
 import util.DBUtil;
 
-public class SectionImpl implements ISection {
+public class SectionImpl {
 	public List<Section> getAllSections() {
 		Connection Conn = DBUtil.getSqliteConnection();
 		String sql = "select * from Section";
@@ -31,22 +33,23 @@ public class SectionImpl implements ISection {
 				int sectionNo = rs.getInt("sectionNo");
 				String dayOfWeek = rs.getString("dayOfWeek");
 				String timeOfDay = rs.getString("timeOfDay");
-				int courseNo = rs.getInt("courseNo");
+				String courseNo = rs.getString("courseNo");
 				String Pssn = rs.getString("Pssn");
-				int roomNo = rs.getInt("roomNo");
-				ICourse ic = dataAccess.createCourseDao();
+				String room=rs.getString("room");
+				int seatingCapacity=rs.getInt("seatingCapacity");
+				
+				CourseDao ic = dataAccess.createCourseDao();
 				Course course = ic.getCourse(courseNo);
-				IProfessor ip = dataAccess.createProfessorDao();
+				ProfessorDao ip = dataAccess.createProfessorDao();
 				Professor professor = ip.getProfessor(Pssn);
-				IRoom ir = dataAccess.createRoomDao();
-				Room room = ir.getRoom(roomNo);
 
 				Section section = new Section();
 				section.setDayOfWeek(dayOfWeek);
-				section.setRepresents(course);
+				section.setRepresentedCourse(course);
 				section.setRoom(room);
+				section.setSeatingCapacity(seatingCapacity);
 				section.setSectionNo(sectionNo);
-				section.setTaughtBy(professor);
+				section.setInstructor(professor);
 				section.setTimeOfDay(timeOfDay);
 				sectionList.add(section);
 			}
@@ -69,21 +72,23 @@ public class SectionImpl implements ISection {
 			while (rs.next()) {
 				String dayOfWeek = rs.getString("dayOfWeek");
 				String timeOfDay = rs.getString("timeOfDay");
-				int courseNo = rs.getInt("courseNo");
+				String courseNo = rs.getString("courseNo");
 				String Pssn = rs.getString("Pssn");
-				int roomNo = rs.getInt("roomNo");
-				ICourse ic = dataAccess.createCourseDao();
+				
+				CourseDao ic = dataAccess.createCourseDao();
 				Course course = ic.getCourse(courseNo);
-				IProfessor ip = dataAccess.createProfessorDao();
+				ProfessorDao ip = dataAccess.createProfessorDao();
 				Professor professor = ip.getProfessor(Pssn);
-				IRoom ir = dataAccess.createRoomDao();
-				Room room = ir.getRoom(roomNo);
-
+				String room=rs.getString("room");
+				int seatingCapacity=rs.getInt("seatingCapacity");
+				
+				section.setRoom(room);
+				section.setSeatingCapacity(seatingCapacity);
 				section.setDayOfWeek(dayOfWeek);
-				section.setRepresents(course);
+				section.setRepresentedCourse(course);
 				section.setRoom(room);
 				section.setSectionNo(sectionNo);
-				section.setTaughtBy(professor);
+				section.setInstructor(professor);
 				section.setTimeOfDay(timeOfDay);
 			}
 			rs.close();
@@ -94,17 +99,68 @@ public class SectionImpl implements ISection {
 		}
 		return section;
 	}
+	
+	public List<Student> getEnrolledStudents(Section section){
+		int sectionNo=section.getSectionNo();
+		List<Student> enrolledStudents=new ArrayList<Student>();
+		String sql="select * from Student_Section where sectionNo='"+sectionNo+"'";
+		Connection Conn = DBUtil.getSqliteConnection();
+		try {
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String Sssn=rs.getString("Sssn");
+				StudentDao sd=dataAccess.createStudentDao();
+				Student student=sd.getStudent(Sssn);
+				enrolledStudents.add(student);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return enrolledStudents;
+	}
 
+	public HashMap<Student, TranscriptEntry> getAssignedGrades(Section section){
+		int sectionNo=section.getSectionNo();
+		String sql="select * from TranscriptEntry where sectionNo='"+sectionNo+"'";
+		HashMap<Student, TranscriptEntry> assignedGrades=new HashMap<Student, TranscriptEntry>();
+		Connection Conn = DBUtil.getSqliteConnection();
+		try {
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String Sssn=rs.getString("Sssn");
+				StudentDao sd=dataAccess.createStudentDao();
+				Student student=sd.getStudent(Sssn);
+				
+				int transEntryNo=rs.getInt("transEntryNo");
+				TranscriptEntryDao ted=dataAccess.createTranscriptEntryDao();
+				TranscriptEntry transEntry=ted.getTranscriptEntry(transEntryNo);
+				assignedGrades.put(student, transEntry);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return assignedGrades;
+	}
+	
 	public void addSection(Section section) {
 		int sectionNo = section.getSectionNo();
 		String dayOfWeek = section.getDayOfWeek();
 		String timeOfDay = section.getTimeOfDay();
-		int courseNo = section.getRepresents().getCourseNo();
-		String pssn = section.getTaughtBy().getSsn();
-		int roomNo = section.getRoom().getRoomNo();
-
+		String courseNo = section.getRepresentedCourse().getCourseNo();
+		String pssn = section.getInstructor().getSsn();
+		String room = section.getRoom();
+		int seatingCapacity=section.getSeatingCapacity();
+		
 		String sql = "insert into Section values('" + sectionNo + "','" + dayOfWeek + "','" + timeOfDay + "','"
-				+ courseNo + "','" + pssn + "','" + roomNo + "')";
+				+ courseNo + "','" + pssn + "','" + room + "','"+seatingCapacity+"')";
 		Connection conn = DBUtil.getSqliteConnection();
 		try {
 			Statement stmt = conn.createStatement();
@@ -113,7 +169,7 @@ public class SectionImpl implements ISection {
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("插入教师异常：" + e.getMessage());
+			System.out.println("插入班次异常：" + e.getMessage());
 		}
 	}
 
@@ -128,7 +184,7 @@ public class SectionImpl implements ISection {
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("删除教师异常：" + e.getMessage());
+			System.out.println("删除班次异常：" + e.getMessage());
 		}
 	}
 }

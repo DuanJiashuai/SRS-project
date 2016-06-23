@@ -3,11 +3,11 @@ package dao;
 public class dataAccess {
 	private static String daoName = "sqliteDao";
 
-	public static ICourse createCourseDao() {
-		ICourse result = null;
+	public static CourseDao createCourseDao() {
+		CourseDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "CourseImpl").newInstance();
-			result = (ICourse)o;
+			result = (CourseDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -15,11 +15,11 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static IStudent createStudentDao() {
-		IStudent result = null;
+	public static StudentDao createStudentDao() {
+		StudentDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "StudentImpl").newInstance();
-			result = (IStudent)o;
+			result = (StudentDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -27,11 +27,11 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static IProfessor createProfessorDao() {
-		IProfessor result = null;
+	public static ProfessorDao createProfessorDao() {
+		ProfessorDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "ProfessorImpl").newInstance();
-			result = (IProfessor)o;
+			result = (ProfessorDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -39,23 +39,12 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static IRoom createRoomDao() {
-		IRoom result = null;
-		try {
-			Object o = Class.forName(daoName + "." + "RoomImpl").newInstance();
-			result = (IRoom)o;
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
-	}
 	
-	public static IScheduleOfClasses createScheduleOfClassesDao() {
-		IScheduleOfClasses result = null;
+	public static ScheduleOfClassesDao createScheduleOfClassesDao() {
+		ScheduleOfClassesDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "ScheduleOfClassesImpl").newInstance();
-			result = (IScheduleOfClasses)o;
+			result = (ScheduleOfClassesDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,11 +52,11 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static ISection createSectionDao() {
-		ISection result = null;
+	public static SectionDao createSectionDao() {
+		SectionDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "SectionImpl").newInstance();
-			result = (ISection)o;
+			result = (SectionDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,11 +64,23 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static ITranscriptEntry createTranscriptEntryDao() {
-		ITranscriptEntry result = null;
+	public static TranscriptDao createTranscriptDao() {
+		TranscriptDao result = null;
+		try {
+			Object o = Class.forName(daoName + "." + "TranscriptImpl").newInstance();
+			result = (TranscriptDao)o;
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static TranscriptEntryDao createTranscriptEntryDao() {
+		TranscriptEntryDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "TranscriptEntryImpl").newInstance();
-			result = (ITranscriptEntry)o;
+			result = (TranscriptEntryDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,11 +88,11 @@ public class dataAccess {
 		return result;
 	}
 	
-	public static IWaitList createWaitListDao() {
-		IWaitList result = null;
+	public static WaitListEntryDao createWaitListDao() {
+		WaitListEntryDao result = null;
 		try {
 			Object o = Class.forName(daoName + "." + "WaitListImpl").newInstance();
-			result = (IWaitList)o;
+			result = (WaitListEntryDao)o;
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

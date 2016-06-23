@@ -8,11 +8,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.IProfessor;
+import dao.SectionDao;
+import dao.dataAccess;
 import model.Professor;
+import model.Section;
 import util.DBUtil;
 
-public class ProfessorImpl implements IProfessor {
+public class ProfessorImpl {
 	public List<Professor> getAllProfessors() {
 		Connection Conn = DBUtil.getSqliteConnection();
 		String sql = "select * from Professor";
@@ -66,6 +68,29 @@ public class ProfessorImpl implements IProfessor {
 		return professor;
 	}
 
+	public List<Section> getSectionTeached(Professor professor){
+		String Pssn=professor.getSsn();
+		String sql="select * from Professor_Section where Pssn='"+Pssn+"'";
+		List<Section> sectionTeached=new ArrayList<Section>();
+		Connection conn = DBUtil.getSqliteConnection();
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int sectionNo=rs.getInt("sectionNo");
+				SectionDao sd=dataAccess.createSectionDao();
+				Section section=sd.getSection(sectionNo);
+				sectionTeached.add(section);
+			}
+			rs.close();
+			pstmt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sectionTeached;
+	}
+	
 	public void addProfessor(Professor professor) {
 		String Pssn = professor.getSsn();
 		String title = professor.getTitle();
@@ -98,6 +123,22 @@ public class ProfessorImpl implements IProfessor {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println("删除教师异常：" + e.getMessage());
+		}
+	}
+	
+	public void teachSection(Professor professor,Section section){
+		String Pssn=professor.getSsn();
+		int sectionNo=section.getSectionNo();
+		String Sql="insert into Professor_Section (Pssn,sectionNo) values('"+Pssn+"','"+sectionNo+"')";
+		Connection conn = DBUtil.getSqliteConnection();
+		try {
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(Sql);
+			stmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("插入教师—班次异常：" + e.getMessage());
 		}
 	}
 }

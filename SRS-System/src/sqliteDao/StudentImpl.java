@@ -8,11 +8,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import dao.IStudent;
+import dao.SectionDao;
+import dao.dataAccess;
+import model.Section;
 import model.Student;
 import util.DBUtil;
 
-public class StudentImpl implements IStudent {
+public class StudentImpl {
 	public List<Student> getAllStudents() {
 		Connection Conn = DBUtil.getSqliteConnection();
 		String sql = "select * from Student";
@@ -66,6 +68,29 @@ public class StudentImpl implements IStudent {
 		return student;
 	}
 
+	public List<Section> getEnrolledSections(Student student){
+		String Sssn=student.getSsn();
+		List<Section> enrolledSections=new ArrayList<Section>();
+		String sql="select * from Student_Section where Sssn='"+Sssn+"'";
+		Connection Conn = DBUtil.getSqliteConnection();
+		try {
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int sectionNo=rs.getInt("sectionNo");
+				SectionDao sd=dataAccess.createSectionDao();
+				Section section=sd.getSection(sectionNo);
+				enrolledSections.add(section);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return enrolledSections;
+	}
+	
 	public void addStudent(Student student) {
 		String Sssn = student.getSsn();
 		String major = student.getMajor();
