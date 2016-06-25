@@ -26,17 +26,17 @@ public class ProfessorJson {
 		}
 		return ja.toString();
 	}
-	
-	public String getProfessorJSON(String Pssn){
+
+	public String getProfessorJSON(String Pssn) {
 		JSONObject jo = new JSONObject();
 
 		ProfessorDao pd = dataAccess.createProfessorDao();
-		Professor professor=pd.getProfessor(Pssn);
+		Professor professor = pd.getProfessor(Pssn);
 		jo.put("Pssn", professor.getSsn());
 		jo.put("name", professor.getName());
 		jo.put("title", professor.getTitle());
 		jo.put("department", professor.getDepartment());
-		
+
 		return jo.toString();
 	}
 }

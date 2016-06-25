@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>教师管理</title>
+<title>课程管理</title>
 <link href="css/blue.css" rel="stylesheet">
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/style.css" rel='stylesheet' type='text/css' />
@@ -26,21 +26,21 @@
 	.glyphicon{
 		top:0;
 	}
-	#professorList>tr>td{
+	#courseList>tr>td{
 		vertical-align: middle;
 	}
 </style>
 </head>
 <body>
-	<h2>教师管理</h2>
-	<h5 class="text-danger">点击<mark class="text-muted"><u>教师姓名</u></mark>修改教师信息</h5>
+	<h2>课程管理</h2>
+	<h5 class="text-danger">点击<mark class="text-muted"><u>课程名称</u></mark>修改课程信息</h5>
 	<hr />
 	<div id="action">
 		<button id="checkAll" class="btn btn-default" onclick="checkAll();">
 			<span class="glyphicon glyphicon-check" aria-hidden="true"></span>全选
 		</button>
-		<button id="deleteProfessor" class="btn btn-default"
-			onclick="deleteProfessors();">
+		<button id="deleteCourse" class="btn btn-default"
+			onclick="deleteCourses();">
 			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>删除
 		</button>
 		<button class="btn btn-default" id="modal-858341" href='#modal-container-858341' role='button' data-toggle='modal'>
@@ -48,13 +48,12 @@
 		</button>
 	</div>
 	<div class="table-responsive">
-		<table class="table table-hover" align="center" id="professorList">
+		<table class="table table-hover" align="center" id="courseList">
 			<tr>
 				<th>#</th>
-				<th>ssn</th>
-				<th>name</th>
-				<th>title</th>
-				<th>department</th>
+				<th>courseNo</th>
+				<th>courseName</th>
+				<th>credits</th>
 			</tr>
 		</table>
 	</div>
@@ -64,28 +63,24 @@
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 					<h4 class="modal-title" id="myModalLabel">
-						添加教师
+						添加课程
 					</h4>
 				</div>
-				<form action="AddProfessor" method="post" id="addProfessor" name="addProfessor">
+				<form action="AddCourse" method="post" id="addCourse" name="addCourse">
 					<div class="modal-body">
 						<h4 align="center">基本信息</h4>
 						<hr />
 						<div class="input-group">
 							<span class="input-group-addon glyphicon glyphicon-credit-card" ></span>
-							<input type="text" name="pssn" id="pssn" class="form-control" placeholder="Professor's Ssn, UNEDITABLE!" />
+							<input type="text" name="courseNo" id="courseNo" class="form-control" placeholder="courseNo, UNEDITABLE!" />
 						</div>
 						<div class="input-group">
 							<span class="input-group-addon glyphicon glyphicon-user" ></span>
-							<input type="text" name="professorName" id="professorName" class="form-control" placeholder="Professor's Name" />
+							<input type="text" name="courseName" id="courseName" class="form-control" placeholder="courseName" />
 						</div>
 						<div class="input-group">
 							<span class="input-group-addon glyphicon glyphicon-education" ></span>
-							<input type="text" name="title" id="title" class="form-control" placeholder="Professor's Title" />
-						</div>
-						<div class="input-group">
-							<span class="input-group-addon glyphicon glyphicon-pawn" ></span>
-							<input type="text" name="department" id="department" class="form-control" placeholder="Professor's Department" />
+							<input type="text" name="credits" id="credits" class="form-control" placeholder="credits" />
 						</div>
 					</div>
 					<div class="modal-footer" id="submitItem">
@@ -106,39 +101,39 @@
 <script src="js/icheck.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
-	$(document).ready(function(){
-		$.getJSON("GetAllProfessors",function(json){
-			var html="";
-			for(var i=0;i<json.length;i++){
-				html+="<tr><td><input type='checkbox' name='professor' id='professor' value='"+json[i].Pssn+"' /></td>";
-				html+="<td>"+json[i].Pssn+"</td><td><a href='EditProfessor.html?Pssn="+json[i].Pssn+"'>"+json[i].name+"</a></td><td>"+json[i].title+"</td><td>"+json[i].department+"</td></tr>";
-			}
-			$("#professorList").append(html);
-			$('input').iCheck({
-				checkboxClass: 'icheckbox_square-blue',
-				radioClass: 'iradio_square-blue',
-				increaseArea: '20%'
-			});
+$(document).ready(function(){
+	$.getJSON("GetAllCourses",function(json){
+		var html="";
+		for(var i=0;i<json.length;i++){
+			html+="<tr><td><input type='checkbox' name='course' id='course' value='"+json[i].courseNo+"' /></td>";
+			html+="<td>"+json[i].courseNo+"</td><td><a href='EditCourse.html?courseNo="+json[i].courseNo+"'>"+json[i].courseName+"</a></td><td>"+json[i].credits+"</td></tr>";
+		}
+		$("#courseList").append(html);
+		$('input').iCheck({
+			checkboxClass: 'icheckbox_square-blue',
+			radioClass: 'iradio_square-blue',
+			increaseArea: '20%'
 		});
 	});
+});
 
-	function deleteProfessors(){
-		var count=0;
-		var pssn=new Array();
-		$(".icheckbox_square-blue").each(function(){
-			if($(this).css("background-position")=="-48px 0px"){
-				count++;
-				pssn[count]=$(this).children("input").val();
-			};
-		});
-		if(count==0){
-			alert("请至少选择一名教师");
-		}else{
-			if(confirm("操作不可恢复，确认要删除选中的教师吗？")==true){
-				alert("删除成功！");
-				window.location.href="DeleteProfessors?count="+count+"&pssn="+pssn; 
-			}
+function deleteCourses(){
+	var count=0;
+	var courseNo=new Array();
+	$(".icheckbox_square-blue").each(function(){
+		if($(this).css("background-position")=="-48px 0px"){
+			count++;
+			courseNo[count]=$(this).children("input").val();
+		};
+	});
+	if(count==0){
+		alert("请至少选择一门课程");
+	}else{
+		if(confirm("操作不可恢复，确认要删除选中的课程吗？")==true){
+			alert("删除成功！");
+			window.location.href="DeleteCourses?count="+count+"&courseNo="+courseNo; 
 		}
 	}
+}
 </script>
 </html>

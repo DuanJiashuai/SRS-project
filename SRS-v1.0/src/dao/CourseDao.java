@@ -11,6 +11,6 @@ public interface CourseDao {
 	List<Section> getAllOfferedAsSection(Course course);
 	List<Course> getPrerequisites(Course course);
 	void addCourse(Course course);
-	void deleteCourse(Course course);
+	void deleteCourse(String courseNo);
 	void updateCourse(Course course);
 }

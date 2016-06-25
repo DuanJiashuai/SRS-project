@@ -31,6 +31,7 @@ public class CourseImpl implements CourseDao {
 				course.setCourseNo(courseNo);
 				course.setCourseName(courseName);
 				course.setCredits(credits);
+				courseList.add(course);
 			}
 			rs.close();
 			pstmt.close();
@@ -52,7 +53,7 @@ public class CourseImpl implements CourseDao {
 			while (rs.next()) {
 				course.setCourseNo(courseNo);
 				course.setCourseName(rs.getString("courseName"));
-				course.setCredits(rs.getInt("credits"));
+				course.setCredits(rs.getDouble("credits"));
 			}
 			rs.close();
 			pstmt.close();
@@ -66,15 +67,18 @@ public class CourseImpl implements CourseDao {
 	@Override
 	public List<Section> getAllOfferedAsSection(Course course) {
 		Connection Conn = DBUtil.getMySqlConnection();
-		String sql = "select * from Section,Professor where Section.Pssn=Professor.Pssn and Section.courseNo='" + course.getCourseNo() + "'";
+		String sql = "select * from Section,Professor where Section.Pssn=Professor.Pssn and Section.courseNo='"
+				+ course.getCourseNo() + "'";
 		List<Section> offeredAsSection = new ArrayList<Section>();
 		try {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				int sectionNo = rs.getInt("sectionNo");
-				Section section = new Section(sectionNo,rs.getString("dayOfWeek"),rs.getString("timeOfDay"),course,rs.getString("room"),rs.getInt("seatingCapacity"));
-				Professor professor = new Professor(rs.getString("professorName"),rs.getString("Pssn"),rs.getString("title"),rs.getString("department"));
+				Section section = new Section(sectionNo, rs.getString("dayOfWeek"), rs.getString("timeOfDay"), course,
+						rs.getString("room"), rs.getInt("seatingCapacity"));
+				Professor professor = new Professor(rs.getString("professorName"), rs.getString("Pssn"),
+						rs.getString("title"), rs.getString("department"));
 				section.setInstructor(professor);
 				offeredAsSection.add(section);
 			}
@@ -91,14 +95,15 @@ public class CourseImpl implements CourseDao {
 	public List<Course> getPrerequisites(Course course) {
 		String courseNo = course.getCourseNo();
 		List<Course> prerequisites = new ArrayList<Course>();
-		String sql = "select * from PreRequisites,Course where PreRequisites.preCourseNo=Course.courseNo and PreRequisites.courseNo='" + courseNo + "'";
+		String sql = "select * from PreRequisites,Course where PreRequisites.preCourseNo=Course.courseNo and PreRequisites.courseNo='"
+				+ courseNo + "'";
 		Connection Conn = DBUtil.getMySqlConnection();
 		try {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				String preCourseNo = rs.getString("preCourseNo");
-				Course preCourse=new Course(preCourseNo,rs.getString("courseName"),rs.getDouble("credits"));
+				Course preCourse = new Course(preCourseNo, rs.getString("courseName"), rs.getDouble("credits"));
 				prerequisites.add(preCourse);
 			}
 		} catch (Exception e) {
@@ -127,8 +132,7 @@ public class CourseImpl implements CourseDao {
 	}
 
 	@Override
-	public void deleteCourse(Course course) {
-		String courseNo = course.getCourseNo();
+	public void deleteCourse(String courseNo) {
 		Connection conn = DBUtil.getMySqlConnection();
 		String sql = "delete from Course where courseNo='" + courseNo + "'";
 		try {
@@ -141,11 +145,12 @@ public class CourseImpl implements CourseDao {
 			System.out.println("ɾ���γ��쳣��" + e.getMessage());
 		}
 	}
-	
+
 	@Override
-	public void updateCourse(Course course){
+	public void updateCourse(Course course) {
 		Connection conn = DBUtil.getMySqlConnection();
-		String sql="update Course set courseNo='"+course.getCourseNo()+"',courseName='"+course.getCourseName()+"',credits="+course.getCredits();
+		String sql = "update Course set courseName='" + course.getCourseName() + "',credits=" + course.getCredits()
+				+ " where courseNo='" + course.getCourseNo() + "'";
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
