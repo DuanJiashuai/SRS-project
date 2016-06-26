@@ -28,9 +28,12 @@ public class SectionImpl implements SectionDao {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				int sectionNo = rs.getInt("sectionNo");
-				Course course=new Course(rs.getString("courseNo"),rs.getString("courseName"),rs.getDouble("credits"));
-				Section section = new Section(sectionNo,rs.getString("dayOfWeek"),rs.getString("timeOfDay"),course,rs.getString("room"),rs.getInt("seatingCapacity"));
-				Professor professor = new Professor(rs.getString("professorName"),rs.getString("Pssn"),rs.getString("title"),rs.getString("department"));
+				Course course = new Course(rs.getString("courseNo"), rs.getString("courseName"),
+						rs.getDouble("credits"));
+				Section section = new Section(sectionNo, rs.getString("dayOfWeek"), rs.getString("timeOfDay"), course,
+						rs.getString("room"), rs.getInt("seatingCapacity"));
+				Professor professor = new Professor(rs.getString("professorName"), rs.getString("Pssn"),
+						rs.getString("title"), rs.getString("department"));
 				section.setInstructor(professor);
 				sectionList.add(section);
 			}
@@ -47,14 +50,18 @@ public class SectionImpl implements SectionDao {
 	public Section getSection(int sectionNo) {
 		Section section = new Section();
 		Connection Conn = DBUtil.getSqliteConnection();
-		String sql = "select * from Section,Course,Professor where Section.Pssn=Professor.Pssn and Section.courseNo=Course.courseNo and Section.sectionNo='" + sectionNo + "'";
+		String sql = "select * from Section,Course,Professor where Section.Pssn=Professor.Pssn and Section.courseNo=Course.courseNo and Section.sectionNo='"
+				+ sectionNo + "'";
 		try {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Course course=new Course(rs.getString("courseNo"),rs.getString("courseName"),rs.getDouble("credits"));
-				section = new Section(sectionNo,rs.getString("dayOfWeek"),rs.getString("timeOfDay"),course,rs.getString("room"),rs.getInt("seatingCapacity"));
-				Professor professor = new Professor(rs.getString("professorName"),rs.getString("Pssn"),rs.getString("title"),rs.getString("department"));
+				Course course = new Course(rs.getString("courseNo"), rs.getString("courseName"),
+						rs.getDouble("credits"));
+				section = new Section(sectionNo, rs.getString("dayOfWeek"), rs.getString("timeOfDay"), course,
+						rs.getString("room"), rs.getInt("seatingCapacity"));
+				Professor professor = new Professor(rs.getString("professorName"), rs.getString("Pssn"),
+						rs.getString("title"), rs.getString("department"));
 				section.setInstructor(professor);
 			}
 			rs.close();
@@ -66,16 +73,47 @@ public class SectionImpl implements SectionDao {
 		return section;
 	}
 
-	public List<Student> getEnrolledStudents(Section section) {
-		int sectionNo = section.getSectionNo();
+	@Override
+	public List<Section> getSectionsByCourse(String courseNo) {
+		Connection Conn = DBUtil.getSqliteConnection();
+		String sql = "select * from Section,Course,Professor where Section.Pssn=Professor.Pssn and Section.courseNo=Course.courseNo and Section.courseNo='"
+				+ courseNo + "'";
+		List<Section> sectionList = new ArrayList<Section>();
+		try {
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int sectionNo = rs.getInt("sectionNo");
+				Course course = new Course(rs.getString("courseNo"), rs.getString("courseName"),
+						rs.getDouble("credits"));
+				Section section = new Section(sectionNo, rs.getString("dayOfWeek"), rs.getString("timeOfDay"), course,
+						rs.getString("room"), rs.getInt("seatingCapacity"));
+				Professor professor = new Professor(rs.getString("professorName"), rs.getString("Pssn"),
+						rs.getString("title"), rs.getString("department"));
+				section.setInstructor(professor);
+				sectionList.add(section);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sectionList;
+	}
+
+	@Override
+	public List<Student> getEnrolledStudents(int sectionNo) {
 		List<Student> enrolledStudents = new ArrayList<Student>();
-		String sql = "select * from Student_Section,Student where Student_Section.Sssn=Student.Sssn and Student_Section.sectionNo='" + sectionNo + "'";
+		String sql = "select * from Student_Section,Student where Student_Section.Sssn=Student.Sssn and Student_Section.sectionNo='"
+				+ sectionNo + "'";
 		Connection Conn = DBUtil.getSqliteConnection();
 		try {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Student student = new Student(rs.getString("studentName"),rs.getString("Sssn"),rs.getString("major"),rs.getString("degree"));
+				Student student = new Student(rs.getString("studentName"), rs.getString("Sssn"), rs.getString("major"),
+						rs.getString("degree"));
 				enrolledStudents.add(student);
 			}
 			rs.close();
@@ -90,15 +128,18 @@ public class SectionImpl implements SectionDao {
 	@Override
 	public HashMap<Student, TranscriptEntry> getAssignedGrades(Section section) {
 		int sectionNo = section.getSectionNo();
-		String sql = "select * from TranscriptEntry,Student where TranscriptEntry.Sssn=Student.Sssn and TranscriptEntry.sectionNo='" + sectionNo + "'";
+		String sql = "select * from TranscriptEntry,Student where TranscriptEntry.Sssn=Student.Sssn and TranscriptEntry.sectionNo='"
+				+ sectionNo + "'";
 		HashMap<Student, TranscriptEntry> assignedGrades = new HashMap<Student, TranscriptEntry>();
 		Connection Conn = DBUtil.getSqliteConnection();
 		try {
 			PreparedStatement pstmt = Conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Student student = new Student(rs.getString("studentName"),rs.getString("Sssn"),rs.getString("major"),rs.getString("degree"));
-				TranscriptEntry transEntry = new TranscriptEntry(rs.getInt("transEntryNo"),student,rs.getString("grade"),section); 
+				Student student = new Student(rs.getString("studentName"), rs.getString("Sssn"), rs.getString("major"),
+						rs.getString("degree"));
+				TranscriptEntry transEntry = new TranscriptEntry(rs.getInt("transEntryNo"), student,
+						rs.getString("grade"), section);
 				assignedGrades.put(student, transEntry);
 			}
 			rs.close();
@@ -149,7 +190,7 @@ public class SectionImpl implements SectionDao {
 			System.out.println("ɾ������쳣��" + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public void updateSection(Section section) {
 		Connection conn = DBUtil.getSqliteConnection();

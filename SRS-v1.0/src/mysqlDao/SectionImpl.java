@@ -73,8 +73,37 @@ public class SectionImpl implements SectionDao {
 		return section;
 	}
 
-	public List<Student> getEnrolledStudents(Section section) {
-		int sectionNo = section.getSectionNo();
+	@Override
+	public List<Section> getSectionsByCourse(String courseNo) {
+		Connection Conn = DBUtil.getMySqlConnection();
+		String sql = "select * from Section,Course,Professor where Section.Pssn=Professor.Pssn and Section.courseNo=Course.courseNo where Section.courseNo='"
+				+ courseNo + "'";
+		List<Section> sectionList = new ArrayList<Section>();
+		try {
+			PreparedStatement pstmt = Conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int sectionNo = rs.getInt("sectionNo");
+				Course course = new Course(rs.getString("courseNo"), rs.getString("courseName"),
+						rs.getDouble("credits"));
+				Section section = new Section(sectionNo, rs.getString("dayOfWeek"), rs.getString("timeOfDay"), course,
+						rs.getString("room"), rs.getInt("seatingCapacity"));
+				Professor professor = new Professor(rs.getString("professorName"), rs.getString("Pssn"),
+						rs.getString("title"), rs.getString("department"));
+				section.setInstructor(professor);
+				sectionList.add(section);
+			}
+			rs.close();
+			pstmt.close();
+			Conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sectionList;
+	}
+
+	@Override
+	public List<Student> getEnrolledStudents(int sectionNo) {
 		List<Student> enrolledStudents = new ArrayList<Student>();
 		String sql = "select * from Student_Section,Student where Student_Section.Sssn=Student.Sssn and Student_Section.sectionNo='"
 				+ sectionNo + "'";

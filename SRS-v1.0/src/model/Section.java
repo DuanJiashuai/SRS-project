@@ -12,7 +12,7 @@ public class Section {
 	private ScheduleOfClasses offeredIn;
 	private Professor instructor;
 
-	private HashMap<String, Student> enrolledStudents;//ËùÓÐ×¢²á¸Ã¿Î³ÌµÄÑ§ÉúµÄ¼¯ºÏ<Ñ§Éússn,StudentÀà>
+	private HashMap<String, Student> enrolledStudents;//ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½Ã¿Î³Ìµï¿½Ñ§ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½<Ñ§ï¿½ï¿½ssn,Studentï¿½ï¿½>
 
 	// The assignedGrades HashMap stores TranscriptEntry object
 	// references, using a reference to the Student to whom it belongs
@@ -130,17 +130,17 @@ public class Section {
 		// First, make sure that this Student is not already
 		// enrolled for this Section, and that he/she has
 		// NEVER taken and passed the course before.
-		// ÊÇ·ñÔÚÑ§ÉúÑ§Ï°¼Æ»®ÖÐ
+		// ï¿½Ç·ï¿½ï¿½ï¿½Ñ§ï¿½ï¿½Ñ§Ï°ï¿½Æ»ï¿½ï¿½ï¿½
 
 		Transcript transcript = s.getTranscript();
-		// ÊÇ·ñÐÞÒÑ¾­ÐÞ¹ýÏàÍ¬¿Î³Ì£¬²¢¼°¸ñ
+		// ï¿½Ç·ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½Þ¹ï¿½ï¿½ï¿½Í¬ï¿½Î³Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (s.isCurrentlyEnrolledInSimilar(this) || transcript.verifyCompletion(this.getRepresentedCourse())) {
 			return EnrollmentStatus.prevEnroll;
 		}
 
 		// If there are any prerequisites for this course,
 		// check to ensure that the Student has completed them.
-		// ÏÈÐÞ¿Î³ÌÊÇ·ñÒÑÍê³É
+		// ï¿½ï¿½ï¿½Þ¿Î³ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Course c = this.getRepresentedCourse();
 		if (c.hasPrerequisites()) {
 			for (Course pre : c.getPrerequisites()) {
@@ -156,7 +156,6 @@ public class Section {
 		// If the total enrollment is already at the
 		// the capacity for this Section, we reject this
 		// enrollment request.
-		// ÊÇ·ñÓÐ¿ÕÓàÃû¶î
 		if (!this.confirmSeatAvailability()) {
 			return EnrollmentStatus.secFull;
 		}
@@ -293,7 +292,6 @@ public class Section {
 		// bidirectional.
 
 		assignedGrades.put(s, te);
-
 		return true;
 	}
 
