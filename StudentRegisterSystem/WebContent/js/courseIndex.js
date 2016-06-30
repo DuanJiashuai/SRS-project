@@ -81,3 +81,16 @@ $(document).ready(function(){
 			$("#studentList").append(html);
 		});
 	}
+	
+	function addCourse(){
+		var courseNo=$("#courseNo").val();
+		var courseName=$("#courseName").val();
+		var credits=$("#credits").val();
+		var prerequisite=$("#Prerequisites").find("option:selected").val();
+		$.getJSON("AddCourse",{courseNo:courseNo,courseName:courseName,credits:credits,prerequisite:prerequisite},function(json){
+			alert(json.warning);
+			if(json.result==true){
+				window.location.reload();
+			}
+		});
+	}

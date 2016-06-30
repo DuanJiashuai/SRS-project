@@ -81,4 +81,15 @@ public class Course {
 		addSection(s);
 		return s;
 	}
+	
+	public boolean isCourseInSimilar(List<Course> courses){
+		boolean flag=false;
+		for(Course c:courses){
+			if(courseNo.equals(c.getCourseNo())||courseName.equals(c.getCourseName())){
+				flag=true;
+				break;
+			}
+		}
+		return flag;
+	}
 }

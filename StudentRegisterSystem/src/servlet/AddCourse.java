@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,13 +31,20 @@ public class AddCourse extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.setContentType("text/html;charset=utf-8");
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		request.setCharacterEncoding("utf-8");
+
+		PrintWriter out = response.getWriter();
 		
 		CourseService cs=new CourseService();
-		cs.addCourse(request.getParameter("courseNo"),request.getParameter("courseName"),Double.parseDouble(request.getParameter("credits")),request.getParameter("prerequisite"));
-
-		response.sendRedirect("CourseIndex.html");
+		String courseNo=request.getParameter("courseNo");
+		String courseName=request.getParameter("courseName");
+		double credits=Double.parseDouble(request.getParameter("credits"));
+		String preCourseNo=request.getParameter("prerequisite");
+		String result=cs.addCourseResult(courseNo,courseName,credits,preCourseNo);
+		
+		out.print(result);
 	}
 
 	/**

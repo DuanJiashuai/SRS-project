@@ -65,18 +65,18 @@ public class ReadCookies extends HttpServlet {
 			jo.put("username", ssn);
 			jo.put("role", role);
 			if (role == 1) {
-				UserService us=new UserService();
-				StudentWithPassword sp=us.getStudentWithPassword(ssn);
+				UserService us = new UserService();
+				StudentWithPassword sp = us.getStudentWithPassword(ssn);
 				pwd = sp.getPassword();
 			} else if (role == 2) {
-				UserService us=new UserService();
-				ProfessorWithPassword pp=us.getProfessorWithPassword(ssn);
+				UserService us = new UserService();
+				ProfessorWithPassword pp = us.getProfessorWithPassword(ssn);
 				pwd = pp.getPassword();
 			} else {
 				pwd = "admin";
 			}
 			jo.put("password", pwd);
-		}else{
+		} else {
 			jo.put("auto", false);
 		}
 		out.print(jo.toString());

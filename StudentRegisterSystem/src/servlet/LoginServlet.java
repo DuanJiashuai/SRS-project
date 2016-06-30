@@ -22,62 +22,63 @@ import service.UserService;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public LoginServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public LoginServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		request.setCharacterEncoding("UTF-8");
 		String userName = request.getParameter("username");
 		String auto = request.getParameter("check");
 		String pwd = request.getParameter("password");
 		int role = Integer.parseInt(request.getParameter("role"));
-		
-		
-		Student student=null;
-		Professor professor=null;
-		
-		boolean isValidated=false;
-		if(role==1){
-			UserService us=new UserService();
-			StudentWithPassword sp=us.getStudentWithPassword(userName);
-			student=sp.getStudent();
-			isValidated=sp.validatePassword(pwd);
-		}else if(role==2){
-			UserService us=new UserService();
-			ProfessorWithPassword pp=us.getProfessorWithPassword(userName);
-			professor=pp.getProfessor();
-			isValidated=pp.validatePassword(pwd);
-		}else{
-			isValidated=userName.equals("admin")&&pwd.equals("admin");
+
+		Student student = null;
+		Professor professor = null;
+
+		boolean isValidated = false;
+		if (role == 1) {
+			UserService us = new UserService();
+			StudentWithPassword sp = us.getStudentWithPassword(userName);
+			student = sp.getStudent();
+			isValidated = sp.validatePassword(pwd);
+		} else if (role == 2) {
+			UserService us = new UserService();
+			ProfessorWithPassword pp = us.getProfessorWithPassword(userName);
+			professor = pp.getProfessor();
+			isValidated = pp.validatePassword(pwd);
+		} else {
+			isValidated = userName.equals("admin") && pwd.equals("admin");
 		}
-		
-		if(isValidated){
+
+		if (isValidated) {
 			HttpSession session = request.getSession();
 			session.setAttribute("role", role);
-			if(role==1){
+			if (role == 1) {
 				session.setAttribute("Student", student);
-			}else if(role==2){
+			} else if (role == 2) {
 				session.setAttribute("Professor", professor);
-			}else{
+			} else {
 				session.setAttribute("Admin", 1);
 			}
 			session.setAttribute("isLogined", 1);
 			if (auto != null && auto.equals("on")) {
 				Cookie user = new Cookie("username", userName);
-				//cookie.setMaxAge(7*24*60*60);
-				user.setMaxAge(5*60 * 60);
-				Cookie roleId=new Cookie("role",String.valueOf(role));
-				roleId.setMaxAge(5*60 * 60);
+				// cookie.setMaxAge(7*24*60*60);
+				user.setMaxAge(5 * 60 * 60);
+				Cookie roleId = new Cookie("role", String.valueOf(role));
+				roleId.setMaxAge(5 * 60 * 60);
 				response.addCookie(user);
 				response.addCookie(roleId);
 			} else {
@@ -85,7 +86,7 @@ public class LoginServlet extends HttpServlet {
 				cookie.setMaxAge(0);
 			}
 			response.sendRedirect("SRS.html");
-		}else{
+		} else {
 			HttpSession session = request.getSession();
 			session = request.getSession();
 			session.setAttribute("isLogined", 0);
@@ -94,9 +95,11 @@ public class LoginServlet extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
