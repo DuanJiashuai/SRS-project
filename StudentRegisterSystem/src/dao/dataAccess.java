@@ -63,6 +63,18 @@ public class dataAccess {
 		return result;
 	}
 
+	public static FacultyDao createFacultyDao() {
+		FacultyDao result = null;
+		try {
+			Object o = Class.forName(daoName + "." + "FacultyImpl").newInstance();
+			result = (FacultyDao) o;
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public static ProfessorWithPasswordDao createProfessorWithPasswordDao() {
 		ProfessorWithPasswordDao result = null;
 		try {
