@@ -1,5 +1,9 @@
 ## SRS选课系统
 
+### 系统相关的UML建模请点击
+[http://github.com/DuanJiashuai/SRS-project/tree/master/UML](http://github.com/DuanJiashuai/SRS-project/tree/master/UML)
+
+
 ### 系统模型
 
 #### 系统分层结构
